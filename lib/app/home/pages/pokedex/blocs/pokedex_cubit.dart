@@ -97,9 +97,10 @@ class PokedexCubit extends Cubit<PokedexState> {
       final List<PokemonModel?> filteredPokemons = pokemonList
           .where(
               (element) => element!.name.toLowerCase() == value.toLowerCase())
-          .toList()
-        ..sort();
+          .toList();
+
       if (filteredPokemons.isNotEmpty) {
+        filteredPokemons.sort();
         emit(state.copyWith(
             filteredPokemons: filteredPokemons, isFiltered: true));
       } else {
