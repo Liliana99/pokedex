@@ -74,15 +74,18 @@ void showPokemonModal({
                         ],
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 50, horizontal: 12),
-                      child: Center(
-                        child: Image.network(
-                            pokemon.sprites!.other!.home!.frontDefault!,
-                            cacheWidth: 300,
-                            cacheHeight: 300,
-                            fit: BoxFit.cover),
+                    Transform.scale(
+                      scale: 0.8,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 50, horizontal: 12),
+                        child: Center(
+                          child: Image.network(
+                              pokemon.sprites!.other!.home!.frontDefault!,
+                              cacheWidth: 300,
+                              cacheHeight: 300,
+                              fit: BoxFit.cover),
+                        ),
                       ),
                     ),
                   ],

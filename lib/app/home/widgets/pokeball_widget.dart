@@ -37,7 +37,7 @@ class _PokeballImageState extends State<PokeballImage> {
           ar: false,
           autoRotate: true,
           autoPlay: true,
-          src: AssetsImagesConstants.ThreeDPokeballImage,
+          src: AssetsImagesConstants.threeDPokeballImage,
         ),
       ),
     );

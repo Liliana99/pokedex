@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/theme/theme.dart';
 
@@ -31,7 +29,7 @@ class CustomSearchWidget extends StatelessWidget {
           decoration: InputDecoration(
             hintText: 'Buscar Pokémon...',
             hintStyle: hintStyle,
-            prefixIcon: Icon(Icons.search),
+            prefixIcon: const Icon(Icons.search),
             border: InputBorder.none,
             contentPadding: const EdgeInsets.all(0),
           ),

@@ -12,7 +12,7 @@ class PokedexHeightAndWidthCard extends StatelessWidget {
     return Card(
       elevation: 5,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 20),
+        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 18),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -44,9 +44,12 @@ class PokedexHeightAndWidthCard extends StatelessWidget {
                 const SizedBox(
                   width: 10,
                 ),
-                Text(
-                  '${pokemonWidth.toStringAsFixed(1)} lbs',
-                  style: context.titleS!,
+                Transform.translate(
+                  offset: const Offset(0.5, 0.0),
+                  child: Text(
+                    '${pokemonWidth.toStringAsFixed(1)} lbs',
+                    style: context.titleS!,
+                  ),
                 ),
               ],
             ),

@@ -104,9 +104,7 @@ class PokemonRepository {
           await CacheManagerRepository()
               .writeCachedJsonPokemonBody(response.data);
         }
-      } finally {
-        print('No permitido en web');
-      }
+      } finally {}
       return response.data;
     } else if (response.statusCode == 204) {
       logger.d('No content to return.');
@@ -153,7 +151,6 @@ class PokemonRepository {
       }
       return null;
     } on DioException catch (e) {
-      print(e.toString());
       return null;
     }
   }
