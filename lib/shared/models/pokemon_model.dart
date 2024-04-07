@@ -14,6 +14,7 @@ class PokemonModel extends Equatable {
   final int? height;
   @JsonKey(name: 'is_default')
   final bool? isDefault;
+  final bool? isCaptured;
   final int? order;
   final int? weight;
 
@@ -52,6 +53,7 @@ class PokemonModel extends Equatable {
     this.abilities,
     this.isDefault,
     this.species,
+    this.isCaptured,
   );
 
   @override
@@ -73,6 +75,7 @@ class PokemonModel extends Equatable {
         cries,
         stats,
         species,
+        isCaptured,
       ];
 
   factory PokemonModel.fromJson(Map<String, dynamic> json) =>

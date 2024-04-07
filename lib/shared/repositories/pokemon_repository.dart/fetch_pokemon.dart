@@ -9,7 +9,6 @@ import 'package:flutter_application_1/shared/intercepotors/rest_interceptor.dart
 import 'package:flutter_application_1/shared/models/pokemon_model.dart';
 import 'package:flutter_application_1/shared/repositories/cache_utils/cache_manager_repository.dart';
 import 'package:logger/logger.dart';
-import 'package:path_provider/path_provider.dart';
 
 class PokemonRepository {
   Dio dio = Dio();
@@ -41,25 +40,9 @@ class PokemonRepository {
   }
 
   Future<List<PokemonModel?>?>? fetchPokemons() async {
-    try {
-      var pokemonModelsFromCache =
-          await CacheManagerRepository().obtainCachedPokemonList();
-      if (pokemonModelsFromCache != null && pokemonModelsFromCache.isNotEmpty) {
-        return pokemonModelsFromCache;
-      } else {
-        var pokemonBody =
-            await CacheManagerRepository().readCachedJsonPokemonBody();
-        pokemonBody ??= await retrieveAndPokemonData();
-        if (pokemonBody != null && pokemonBody['results'] != null) {
-          return await fetchPokemonList(pokemonBody['results']);
-        }
-      }
-    } on MissingPlatformDirectoryException catch (e) {
-      var pokemonBody = await retrieveAndPokemonData();
-      fetchPokemonList(pokemonBody!['results']);
-    } catch (e) {
-      logger.d(e);
-      throw Exception('Failed to load Pokemons');
+    var pokemonBody = await retrieveAndPokemonData();
+    if (pokemonBody != null && pokemonBody['results'] != null) {
+      return await fetchPokemonList(pokemonBody['results']);
     }
     return null;
   }
@@ -78,11 +61,9 @@ class PokemonRepository {
   Future<PokemonModel?> fetchPokemonData(String name) async {
     String url = UrlConstants.pokemonUrl;
     url = url + name;
-
     try {
       Response pokemonResponse = await dio.get(url);
       PokemonModel pokemonModel;
-
       Map<String, dynamic> body = (pokemonResponse.data);
       if (pokemonResponse.statusCode == 200) {
         if (body['id'] != null) {
@@ -90,13 +71,14 @@ class PokemonRepository {
           return pokemonModel;
         }
       }
-    } catch (e) {
-      logger.d('Exception when calling URL $url  $e');
-    }
+    } finally {}
     return null;
   }
 
   Future<Map<String, dynamic>?> retrieveAndPokemonData() async {
+    var bodyFromCache =
+        await CacheManagerRepository().readCachedJsonPokemonBody();
+    if (bodyFromCache != null) return bodyFromCache;
     final response = await dio.get(baseUrl);
     if (response.statusCode == 200) {
       try {
@@ -116,7 +98,8 @@ class PokemonRepository {
   }
 
   Future<List<PokemonModel?>?> fetchAndUpdateList(
-      Function(PokemonModel) onPokemonFetched) async {
+      Function(PokemonModel) onPokemonFetched,
+      Function(PokemonSpecieModel) onSpecieFectched) async {
     var pokemonBody =
         await CacheManagerRepository().readCachedJsonPokemonBody() ??
             await retrieveAndPokemonData();
@@ -132,6 +115,10 @@ class PokemonRepository {
             PokemonModel? pokemonModel =
                 await fetchPokemonData(pokemon['name']!);
             onPokemonFetched(pokemonModel!);
+            var specie = await fetchSpecies(pokemonModel.species!.url!);
+            if (specie != null) {
+              onSpecieFectched(specie);
+            }
           },
         ),
       );
@@ -150,7 +137,7 @@ class PokemonRepository {
         return pokemonSpecie;
       }
       return null;
-    } on DioException catch (e) {
+    } on DioException catch (_) {
       return null;
     }
   }
