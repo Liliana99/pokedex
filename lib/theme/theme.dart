@@ -11,6 +11,9 @@ ThemeData buildThemeData() {
       scaffoldBackgroundColor: AppColors.pokedexColor,
       useMaterial3: true,
       fontFamily: AssetsConsts.notoSantsFont,
+      appBarTheme: const AppBarTheme(
+          color: AppColors.pokedexColor,
+          iconTheme: IconThemeData(color: Colors.white)),
       textTheme: const TextTheme(
         displayLarge: TextStyle(fontSize: 72),
         displayMedium: TextStyle(fontSize: 45),

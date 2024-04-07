@@ -3,62 +3,62 @@ import 'dart:io';
 
 import 'package:flutter_application_1/shared/models/pokemon_model.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CacheManagerRepository {
   Future<void> writeCachedJsonPokemonBody(Map<String, dynamic>? body) async {
-    const String fileName = 'pathString.json';
-    final Directory directory = await getTemporaryDirectory();
-    final File file = File('${directory.path}/$fileName');
-    if (body != null) {
-      final String jsonString = jsonEncode(body);
-      await file.writeAsString(jsonString, flush: true);
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    const String key = 'pathString.json';
+
+    String? jsonString = body != null ? jsonEncode(body) : null;
+
+    if (jsonString != null) {
+      await prefs.setString(key, jsonString);
+    } else {
+      await prefs.remove(key);
     }
   }
 
   Future<Map<String, dynamic>?> readCachedJsonPokemonBody() async {
-    if (Platform.isAndroid || Platform.isIOS) {
-      const String fileName = 'pathString.json';
-      final Directory directory = await getTemporaryDirectory();
-      final File file = File('${directory.path}/$fileName');
-
-      if (file.existsSync()) {
-        final String data = await file.readAsString();
-        if (data.isNotEmpty) {
-          final Map<String, dynamic> decodedData = jsonDecode(data);
-          return decodedData;
-        }
-      }
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    const String key = 'pathString.json';
+    String? jsonString = prefs.getString(key);
+    if (jsonString != null) {
+      return jsonDecode(jsonString) as Map<String, dynamic>;
+    } else {
+      return null;
     }
-
-    return null;
   }
 
   Future<void> writeOnCachePokemonList(List<PokemonModel?>? pokemons) async {
-    final Directory directory = await getTemporaryDirectory();
-    final File file = File('${directory.path}/pathPokemonList.json');
+    if (pokemons == null || pokemons.isEmpty) return;
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    if (pokemons != null) {
-      final String jsonString = jsonEncode(pokemons);
-      await file.writeAsString(jsonString, flush: true);
-    }
+    List<String> pokemonListString = pokemons.map((pokemon) {
+      return jsonEncode(pokemon?.toJson() ?? {});
+    }).toList();
+    await prefs.setStringList('pokemon_list', pokemonListString);
   }
 
-  Future<List<PokemonModel?>?> obtainCachedPokemonList() async {
-    if (Platform.isAndroid || Platform.isIOS) {
-      final Directory directory = await getTemporaryDirectory();
-      final File file = File('${directory.path}/pathPokemonList.json');
+  Future<List<PokemonModel?>?> loadPokemonList() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-      if (await file.exists()) {
-        final String jsonString = await file.readAsString();
-        final List<dynamic> jsonList = jsonDecode(jsonString);
-        final List<PokemonModel?> pokemons = jsonList
-            .map((jsonItem) => PokemonModel.fromJson(jsonItem))
-            .toList();
-        return pokemons;
-      }
+    List<String>? pokemonListString = prefs.getStringList('pokemon_list');
+
+    if (pokemonListString == null) {
+      return [];
     }
 
-    return null;
+    List<PokemonModel?> pokemons = pokemonListString.map((pokemonString) {
+      try {
+        final Map<String, dynamic> pokemonMap = jsonDecode(pokemonString);
+        return PokemonModel.fromJson(pokemonMap);
+      } catch (e) {
+        return null;
+      }
+    }).toList();
+
+    return pokemons;
   }
 
   Future<bool> isPokemonListCached() async {
@@ -74,9 +74,7 @@ class CacheManagerRepository {
         }
       }
       return false;
-    } on Exception catch (e) {
-      print(e);
-    }
+    } on Exception catch (_) {}
     return false;
   }
 }

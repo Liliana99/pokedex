@@ -43,6 +43,8 @@ abstract class _$PokemonModelCWProxy {
 
   PokemonModel species(NamedAPIResourceModel? species);
 
+  PokemonModel isCaptured(bool? isCaptured);
+
   /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `PokemonModel(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
   ///
   /// Usage
@@ -68,6 +70,7 @@ abstract class _$PokemonModelCWProxy {
     List<PokemonAbility>? abilities,
     bool? isDefault,
     NamedAPIResourceModel? species,
+    bool? isCaptured,
   });
 }
 
@@ -138,6 +141,9 @@ class _$PokemonModelCWProxyImpl implements _$PokemonModelCWProxy {
       this(species: species);
 
   @override
+  PokemonModel isCaptured(bool? isCaptured) => this(isCaptured: isCaptured);
+
+  @override
 
   /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `PokemonModel(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
   ///
@@ -164,6 +170,7 @@ class _$PokemonModelCWProxyImpl implements _$PokemonModelCWProxy {
     Object? abilities = const $CopyWithPlaceholder(),
     Object? isDefault = const $CopyWithPlaceholder(),
     Object? species = const $CopyWithPlaceholder(),
+    Object? isCaptured = const $CopyWithPlaceholder(),
   }) {
     return PokemonModel(
       name == const $CopyWithPlaceholder() || name == null
@@ -238,6 +245,10 @@ class _$PokemonModelCWProxyImpl implements _$PokemonModelCWProxy {
           ? _value.species
           // ignore: cast_nullable_to_non_nullable
           : species as NamedAPIResourceModel?,
+      isCaptured == const $CopyWithPlaceholder()
+          ? _value.isCaptured
+          // ignore: cast_nullable_to_non_nullable
+          : isCaptured as bool?,
     );
   }
 }
@@ -1490,6 +1501,7 @@ PokemonModel _$PokemonModelFromJson(Map<String, dynamic> json) => PokemonModel(
           ? null
           : NamedAPIResourceModel.fromJson(
               json['species'] as Map<String, dynamic>),
+      json['isCaptured'] as bool?,
     );
 
 Map<String, dynamic> _$PokemonModelToJson(PokemonModel instance) =>
@@ -1499,6 +1511,7 @@ Map<String, dynamic> _$PokemonModelToJson(PokemonModel instance) =>
       'base_experience': instance.baseExperience,
       'height': instance.height,
       'is_default': instance.isDefault,
+      'isCaptured': instance.isCaptured,
       'order': instance.order,
       'weight': instance.weight,
       'abilities': instance.abilities,
