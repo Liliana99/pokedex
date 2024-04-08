@@ -231,53 +231,63 @@ class PokemonCapturedCard extends StatelessWidget {
       specieDescription = pokemonSpecieModel.getFlavorTextInSpanish()!;
     }
 
-    return Card.filled(
-      color: backgroundColor!,
-      child: InkWell(
-        onTap: onTap,
-        child: Column(children: <Widget>[
-          Flexible(
-            child: Stack(
-              children: [
-                PokemonHeaderInfo(
-                    backgroundColor: backgroundColor!, pokemon: pokemon),
-                const SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Transform.scale(
-                        scale: 0.9,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: Transform.translate(
-                            offset: const Offset(0.0, 1.25),
-                            child: Center(
-                              child: Image.network(
-                                  pokemon.sprites!.other!.home!.frontDefault!,
-                                  cacheWidth: 300,
-                                  cacheHeight: 300,
-                                  fit: BoxFit.cover),
-                            ),
-                          ),
-                        ),
+    return Padding(
+      padding: const EdgeInsets.only(right: 20),
+      child: Center(
+        child: Transform(
+          transform: Matrix4.rotationZ(-0.1),
+          child: Card.filled(
+            color: backgroundColor!,
+            child: InkWell(
+              onTap: onTap,
+              child: Column(children: <Widget>[
+                Flexible(
+                  child: Stack(
+                    children: [
+                      PokemonHeaderInfo(
+                          backgroundColor: backgroundColor!, pokemon: pokemon),
+                      const SizedBox(
+                        height: 10,
                       ),
-                    )
-                  ],
-                )
-              ],
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Transform.scale(
+                              scale: 0.9,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 12),
+                                child: Transform.translate(
+                                  offset: const Offset(0.0, 1.25),
+                                  child: Center(
+                                    child: Image.network(
+                                        pokemon.sprites!.other!.home!
+                                            .frontDefault!,
+                                        cacheWidth: 300,
+                                        cacheHeight: 300,
+                                        fit: BoxFit.cover),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+                Flexible(
+                  child: PokemonDetailInfo(
+                    pokemon: pokemon,
+                    pokemonSpecieModel: pokemonSpecieModel,
+                    specieDescription: specieDescription,
+                  ),
+                ),
+                const SizedBox(height: 10),
+              ]),
             ),
           ),
-          Flexible(
-            child: PokemonDetailInfo(
-              pokemon: pokemon,
-              pokemonSpecieModel: pokemonSpecieModel,
-              specieDescription: specieDescription,
-            ),
-          ),
-          const SizedBox(height: 10),
-        ]),
+        ),
       ),
     );
   }

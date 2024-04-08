@@ -64,6 +64,9 @@ class SectionCard extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Text(
                       title,
+                      maxLines: 2,
+                      textAlign: TextAlign.left,
+                      textScaler: const TextScaler.linear(0.9),
                       style: context.titleM!.copyWith(
                           color: isLightColor
                               ? Colors.black.withOpacity(0.7)
