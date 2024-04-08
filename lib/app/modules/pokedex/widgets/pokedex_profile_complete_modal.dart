@@ -5,7 +5,7 @@ import 'package:flutter_application_1/app/modules/pokedex/blocs/pokedex_state.da
 import 'package:flutter_application_1/app/modules/pokedex/widgets/pokeball_vibrate.dart';
 import 'package:flutter_application_1/app/modules/pokedex/widgets/pokemon_detail_info.dart';
 import 'package:flutter_application_1/app/modules/pokedex/widgets/pokemon_header_info.dart';
-import 'package:flutter_application_1/app/modules/pokemon_capture/pages/pokeball_animation_capture.dart';
+import 'package:flutter_application_1/app/modules/pokemon_capture/pages/widgets/pokeball_animation_capture.dart';
 
 import 'package:flutter_application_1/shared/models/pokemon_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
