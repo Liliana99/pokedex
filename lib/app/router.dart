@@ -3,7 +3,7 @@ import 'package:flutter_application_1/app/modules/home/pages/home_page.dart';
 import 'package:flutter_application_1/app/modules/pokedex/blocs/pokedex_cubit.dart';
 
 import 'package:flutter_application_1/app/modules/pokedex/pages/pokedex_page.dart';
-import 'package:flutter_application_1/app/modules/pokemon_capture/pages/widgets/pokeball_animation_capture.dart';
+import 'package:flutter_application_1/app/modules/pokemon_capture/widgets/pokeball_animation_capture.dart';
 import 'package:flutter_application_1/app/modules/pokemon_capture/pages/pokeball_capture_page.dart';
 import 'package:go_router/go_router.dart';
 
