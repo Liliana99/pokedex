@@ -1,8 +1,6 @@
 import 'package:dismissible_page/dismissible_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/app/router.dart';
 import 'package:flutter_application_1/consts/assets_constants.dart';
-import 'package:go_router/go_router.dart';
 import 'package:o3d/o3d.dart';
 
 class PokeballAnimationCapture extends StatelessWidget {

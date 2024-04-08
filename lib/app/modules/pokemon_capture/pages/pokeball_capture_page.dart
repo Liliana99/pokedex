@@ -1,33 +1,33 @@
+import 'dart:math';
+
 import 'package:appinio_swiper/appinio_swiper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/app/modules/pokedex/widgets/pokedex_profile_complete_modal.dart';
-import 'package:flutter_application_1/app/modules/pokedex/widgets/pokemon_detail_info.dart';
-import 'package:flutter_application_1/app/modules/pokedex/widgets/pokemon_header_info.dart';
+import 'package:flutter_application_1/app/modules/pokemon_capture/pages/widgets/pokemon_card.dart';
 import 'package:flutter_application_1/app/router.dart';
 import 'package:flutter_application_1/shared/models/pokemon_model.dart';
 import 'package:flutter_application_1/shared/widgets/app_bar.dart';
 import 'package:flutter_application_1/theme/theme.dart';
 import 'package:flutter_application_1/utils/obtain_pokemon_color.dart';
 import 'package:go_router/go_router.dart';
-import 'package:logger/web.dart';
 
 import 'package:flutter_application_1/app/modules/pokedex/blocs/pokedex_state.dart';
 
-class PokemonCapturedList extends StatefulWidget {
+class PokemonCapturePage extends StatefulWidget {
   final Color? pokemonBackgroundColor;
   final PokedexState state;
-  const PokemonCapturedList({
+  const PokemonCapturePage({
     super.key,
     this.pokemonBackgroundColor,
     required this.state,
   });
 
   @override
-  State<PokemonCapturedList> createState() => _PokemonCapturedListState();
+  State<PokemonCapturePage> createState() => _PokemonCapturePageState();
 }
 
-class _PokemonCapturedListState extends State<PokemonCapturedList> {
+class _PokemonCapturePageState extends State<PokemonCapturePage> {
   final AppinioSwiperController controller = AppinioSwiperController();
 
   @override
@@ -99,8 +99,8 @@ class _PokemonCapturedListState extends State<PokemonCapturedList> {
                 onCardPositionChanged: (
                   SwiperPosition position,
                 ) {},
-                onSwipeEnd: _swipeEnd,
-                onEnd: _onEnd,
+                onSwipeEnd: (int, index, SwiperActivity) {},
+                onEnd: () {},
                 cardCount: widget.state.capturedPokemons!.length,
                 cardBuilder: (BuildContext context, int index) {
                   PokemonModel pokemon = widget.state.capturedPokemons![index]!;
@@ -113,7 +113,8 @@ class _PokemonCapturedListState extends State<PokemonCapturedList> {
                       ? PokemonCapturedCardEmpty(
                           backgroundColor: widget.pokemonBackgroundColor,
                         )
-                      : PokemonCapturedCard(
+                      : DynamicPokemonCardWidget(
+                          currentIndex: index,
                           backgroundColor: pokemonBackgroundColor,
                           pokemon: pokemon,
                           state: widget.state,
@@ -133,45 +134,17 @@ class _PokemonCapturedListState extends State<PokemonCapturedList> {
     );
   }
 
-  void _swipeEnd(int previousIndex, int targetIndex, SwiperActivity activity) {
-    var log = Logger();
-    switch (activity) {
-      case Swipe():
-        log.d('The card was swiped to the : ${activity.direction}');
-        log.d(
-            'Swipe : previous index: $previousIndex, target index: $targetIndex');
-
-        break;
-      case Unswipe():
-        log.d('A ${activity.direction.name} swipe was undone.');
-        log.d('previous index: $previousIndex, target index: $targetIndex');
-
-        break;
-      case CancelSwipe():
-        log.d('A swipe was cancelled');
-        break;
-      case DrivenActivity():
-        log.d('Driven Activity');
-        break;
-    }
-  }
-
-  void _onEnd() {
-    var log = Logger();
-    log.d('end reached!');
-  }
-
   Future<void> _shakeCard() async {
     const double distance = 30;
     // We can animate back and forth by chaining different animations.
     await controller.animateTo(
       const Offset(-distance, 0),
-      duration: const Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 400),
       curve: Curves.easeInOut,
     );
     await controller.animateTo(
       const Offset(distance, 0),
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 600),
       curve: Curves.easeInOut,
     );
     // We need to animate back to the center because `animateTo` does not center
@@ -184,46 +157,61 @@ class _PokemonCapturedListState extends State<PokemonCapturedList> {
   }
 }
 
-class PokemonCapturedCardEmpty extends StatelessWidget {
-  final Color? backgroundColor;
-  const PokemonCapturedCardEmpty({super.key, this.backgroundColor});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card.filled(
-      color: backgroundColor!,
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Text(
-            "Fin de la lista...",
-            maxLines: 3,
-            textAlign: TextAlign.center,
-            style: context.headM!.copyWith(color: Colors.white),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class PokemonCapturedCard extends StatelessWidget {
+class DynamicPokemonCardWidget extends StatelessWidget {
   final Color? backgroundColor;
   final VoidCallback? onTap;
   final PokemonModel pokemon;
   final PokedexState state;
-  const PokemonCapturedCard({
+  final int currentIndex;
+  const DynamicPokemonCardWidget({
     super.key,
     this.backgroundColor,
     this.onTap,
     required this.pokemon,
     required this.state,
+    required this.currentIndex,
   });
 
   @override
   Widget build(BuildContext context) {
     String? specieDescription;
     PokemonSpecieModel? pokemonSpecieModel;
+    const double oneCeroAngle = -pi * 0.1;
+    double defaultAngle = pi * -0;
+    Offset getOffSer(int index) {
+      return {
+            0: const Offset(0, 30),
+            1: const Offset(-5, 30),
+            2: const Offset(5, 30),
+          }[index] ??
+          const Offset(0, 0);
+    }
+
+    double getAngle(int index) {
+      switch (index % 3) {
+        case 0:
+          return oneCeroAngle;
+        case 1:
+          return -oneCeroAngle;
+        case 2:
+          return defaultAngle;
+        default:
+          return oneCeroAngle;
+      }
+    }
+
+    double getScale(int index) {
+      switch (index % 3) {
+        case 0:
+          return 0.7;
+        case 1:
+          return 0.9;
+        case 2:
+          return 0.95;
+        default:
+          return 0.7;
+      }
+    }
 
     if (state.pokemonSpecie != null && state.pokemonSpecie!.isNotEmpty) {
       pokemonSpecieModel = state.pokemonSpecie!
@@ -231,53 +219,21 @@ class PokemonCapturedCard extends StatelessWidget {
       specieDescription = pokemonSpecieModel.getFlavorTextInSpanish()!;
     }
 
-    return Card.filled(
-      color: backgroundColor!,
-      child: InkWell(
-        onTap: onTap,
-        child: Column(children: <Widget>[
-          Flexible(
-            child: Stack(
-              children: [
-                PokemonHeaderInfo(
-                    backgroundColor: backgroundColor!, pokemon: pokemon),
-                const SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Transform.scale(
-                        scale: 0.9,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: Transform.translate(
-                            offset: const Offset(0.0, 1.25),
-                            child: Center(
-                              child: Image.network(
-                                  pokemon.sprites!.other!.home!.frontDefault!,
-                                  cacheWidth: 300,
-                                  cacheHeight: 300,
-                                  fit: BoxFit.cover),
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                )
-              ],
-            ),
+    return Transform.translate(
+      offset: getOffSer(currentIndex),
+      child: Transform.scale(
+        scale: getScale(currentIndex),
+        child: Transform.rotate(
+          angle: getAngle(currentIndex),
+          child: PokemonCardCaptured(
+            pokemon: pokemon,
+            state: state,
+            onTap: onTap,
+            backgroundColor: backgroundColor,
+            specieDescription: specieDescription,
+            pokemonSpecieModel: pokemonSpecieModel,
           ),
-          Flexible(
-            child: PokemonDetailInfo(
-              pokemon: pokemon,
-              pokemonSpecieModel: pokemonSpecieModel,
-              specieDescription: specieDescription,
-            ),
-          ),
-          const SizedBox(height: 10),
-        ]),
+        ),
       ),
     );
   }
