@@ -4,7 +4,7 @@ import 'package:appinio_swiper/appinio_swiper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/app/modules/pokedex/widgets/pokedex_profile_complete_modal.dart';
-import 'package:flutter_application_1/app/modules/pokemon_capture/pages/widgets/pokemon_card.dart';
+import 'package:flutter_application_1/app/modules/pokemon_capture/widgets/pokemon_card.dart';
 import 'package:flutter_application_1/app/router.dart';
 import 'package:flutter_application_1/shared/models/pokemon_model.dart';
 import 'package:flutter_application_1/shared/widgets/app_bar.dart';
