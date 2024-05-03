@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:appinio_swiper/appinio_swiper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/app/modules/pokedex/blocs/pokedex_cubit.dart';
 import 'package:flutter_application_1/app/modules/pokedex/widgets/pokedex_profile_complete_modal.dart';
 import 'package:flutter_application_1/app/modules/pokemon_capture/widgets/pokemon_card.dart';
 import 'package:flutter_application_1/app/router.dart';
@@ -10,127 +11,166 @@ import 'package:flutter_application_1/shared/models/pokemon_model.dart';
 import 'package:flutter_application_1/shared/widgets/app_bar.dart';
 import 'package:flutter_application_1/theme/theme.dart';
 import 'package:flutter_application_1/utils/obtain_pokemon_color.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:flutter_application_1/app/modules/pokedex/blocs/pokedex_state.dart';
 
-class PokemonCapturePage extends StatefulWidget {
-  final Color? pokemonBackgroundColor;
-  final PokedexState state;
+class PokemonCapturePage extends StatelessWidget {
   const PokemonCapturePage({
     super.key,
-    this.pokemonBackgroundColor,
-    required this.state,
   });
 
   @override
-  State<PokemonCapturePage> createState() => _PokemonCapturePageState();
+  Widget build(BuildContext context) {
+    return const PokemonCaptureContent();
+  }
 }
 
-class _PokemonCapturePageState extends State<PokemonCapturePage> {
+class PokemonCaptureContent extends StatefulWidget {
+  final Color? pokemonBackgroundColor;
+  final PokedexState? pokemonState;
+
+  const PokemonCaptureContent({
+    super.key,
+    this.pokemonBackgroundColor,
+    this.pokemonState,
+  });
+
+  @override
+  State<PokemonCaptureContent> createState() => _PokemonCaptureContentState();
+}
+
+class _PokemonCaptureContentState extends State<PokemonCaptureContent> {
   final AppinioSwiperController controller = AppinioSwiperController();
+  bool isFinalList = false;
 
   @override
   void initState() {
-    if (widget.state.capturedPokemons != null) {
-      Future.delayed(const Duration(seconds: 1)).then((_) {
-        _shakeCard();
-      });
-    }
+    Future.delayed(
+      const Duration(seconds: 1),
+    ).then((_) {
+      _shakeCard();
+    });
+
     super.initState();
   }
 
+  void determinePositionList(int currentIndex) {}
+
   @override
   Widget build(BuildContext context) {
-    if (widget.state.capturedPokemons == null) {
-      return Scaffold(
-        appBar: AppAppBar(
-          foregroundColor: Colors.red,
-          leading: IconButton(
-              onPressed: () => context.go(homeRoute),
-              icon: const Icon(Icons.arrow_back_ios_new_outlined)),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(24),
+    return BlocBuilder<PokedexCubit, PokedexState>(
+      builder: (context, _) {
+        PokedexState state = widget.pokemonState!;
+
+        if (state.capturedPokemons == null ||
+            state.capturedPokemons!.isEmpty ||
+            isFinalList) {
+          return Scaffold(
+            appBar: AppAppBar(
+              foregroundColor: Colors.red,
+              leading: IconButton(
+                  onPressed: () => context.go(homeRoute),
+                  icon: const Icon(Icons.arrow_back_ios_new_outlined)),
+            ),
+            body: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Text(
+                        isFinalList
+                            ? "Fin de Lista...."
+                            : "No existen pokemons capturados...",
+                        maxLines: 3,
+                        textAlign: TextAlign.center,
+                        style: context.headM!.copyWith(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+        return CupertinoPageScaffold(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Center(
+              Align(
+                alignment: Alignment.topLeft,
+                child: IconButton(
+                  icon:
+                      const Icon(Icons.arrow_back_ios_new, color: Colors.white),
+                  onPressed: () => context.go(homeRoute),
+                ),
+              ),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * .75,
                 child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Text(
-                    "No existen pokemons capturados...",
-                    maxLines: 3,
-                    textAlign: TextAlign.center,
-                    style: context.headM!.copyWith(color: Colors.white),
+                  padding: const EdgeInsets.only(
+                    left: 25,
+                    right: 25,
+                    top: 50,
+                    bottom: 40,
+                  ),
+                  child: AppinioSwiper(
+                    invertAngleOnBottomDrag: true,
+                    backgroundCardCount: 3,
+                    swipeOptions: const SwipeOptions.all(),
+                    controller: controller,
+                    onCardPositionChanged: (
+                      SwiperPosition position,
+                    ) {},
+                    onSwipeEnd: (int, index, SwiperActivity) {
+                      if (int == state.capturedPokemons!.length - 1) {
+                        setState(() {
+                          isFinalList = true;
+                        });
+                      }
+                    },
+                    onEnd: () {},
+                    cardCount: state.capturedPokemons!.length,
+                    cardBuilder: (BuildContext context, int index) {
+                      PokemonModel pokemon = state.capturedPokemons![index]!;
+
+                      Color pokemonBackgroundColor = pokemon.types != null
+                          ? findPokemonTypeColor(
+                                  pokemon.types!.first.type!.name!) ??
+                              Colors.red
+                          : Colors.red;
+
+                      return state.capturedPokemons!.indexOf(
+                                      state.capturedPokemons![index]) ==
+                                  state.capturedPokemons!.length - 1 &&
+                              state.capturedPokemons!.isEmpty
+                          ? PokemonCapturedCardEmpty(
+                              backgroundColor: widget.pokemonBackgroundColor,
+                            )
+                          : DynamicPokemonCardWidget(
+                              currentIndex: index,
+                              backgroundColor: pokemonBackgroundColor,
+                              pokemon: pokemon,
+                              state: state,
+                              onTap: () async {
+                                showPokemonModal(
+                                    context: context,
+                                    backgroundColor: pokemonBackgroundColor,
+                                    pokemon: state.capturedPokemons![index]!,
+                                    state: state);
+                              });
+                    },
                   ),
                 ),
               ),
             ],
           ),
-        ),
-      );
-    }
-    return CupertinoPageScaffold(
-      child: Column(
-        children: [
-          Align(
-            alignment: Alignment.topLeft,
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
-              onPressed: () => context.go(homeRoute),
-            ),
-          ),
-          SizedBox(
-            height: MediaQuery.of(context).size.height * .75,
-            child: Padding(
-              padding: const EdgeInsets.only(
-                left: 25,
-                right: 25,
-                top: 50,
-                bottom: 40,
-              ),
-              child: AppinioSwiper(
-                invertAngleOnBottomDrag: true,
-                backgroundCardCount: 3,
-                swipeOptions: const SwipeOptions.all(),
-                controller: controller,
-                onCardPositionChanged: (
-                  SwiperPosition position,
-                ) {},
-                onSwipeEnd: (int, index, SwiperActivity) {},
-                onEnd: () {},
-                cardCount: widget.state.capturedPokemons!.length,
-                cardBuilder: (BuildContext context, int index) {
-                  PokemonModel pokemon = widget.state.capturedPokemons![index]!;
-                  Color pokemonBackgroundColor =
-                      findPokemonTypeColor(pokemon.types!.first.type!.name!);
-
-                  return widget.state.capturedPokemons!
-                              .indexOf(widget.state.capturedPokemons![index]) ==
-                          widget.state.capturedPokemons!.length - 1
-                      ? PokemonCapturedCardEmpty(
-                          backgroundColor: widget.pokemonBackgroundColor,
-                        )
-                      : DynamicPokemonCardWidget(
-                          currentIndex: index,
-                          backgroundColor: pokemonBackgroundColor,
-                          pokemon: pokemon,
-                          state: widget.state,
-                          onTap: () async {
-                            showPokemonModal(
-                                context: context,
-                                backgroundColor: pokemonBackgroundColor,
-                                pokemon: widget.state.capturedPokemons![index]!,
-                                state: widget.state);
-                          });
-                },
-              ),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -174,7 +214,6 @@ class DynamicPokemonCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String? specieDescription;
     PokemonSpecieModel? pokemonSpecieModel;
     const double oneCeroAngle = -pi * 0.1;
     double defaultAngle = pi * -0;
@@ -213,12 +252,6 @@ class DynamicPokemonCardWidget extends StatelessWidget {
       }
     }
 
-    if (state.pokemonSpecie != null && state.pokemonSpecie!.isNotEmpty) {
-      pokemonSpecieModel = state.pokemonSpecie!
-          .firstWhere((pokemonSpecie) => pokemonSpecie.id == pokemon.id);
-      specieDescription = pokemonSpecieModel.getFlavorTextInSpanish()!;
-    }
-
     return Transform.translate(
       offset: getOffSer(currentIndex),
       child: Transform.scale(
@@ -230,7 +263,9 @@ class DynamicPokemonCardWidget extends StatelessWidget {
             state: state,
             onTap: onTap,
             backgroundColor: backgroundColor,
-            specieDescription: specieDescription,
+            specieDescription: context
+                .read<PokedexCubit>()
+                .findSpecieDescriptionPokemon(state, pokemon.id),
             pokemonSpecieModel: pokemonSpecieModel,
           ),
         ),

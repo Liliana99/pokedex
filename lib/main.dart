@@ -37,14 +37,14 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   late GoRouter router;
 
-  Future<void> dowloadedImages() async {
+  Future<void> downloadPokemons() async {
     context.read<PokedexCubit>().loadPokemons();
   }
 
   @override
   void initState() {
     router = buildRoutes(BlocProvider.of<PokedexCubit>(context));
-    dowloadedImages();
+    downloadPokemons();
     super.initState();
   }
 

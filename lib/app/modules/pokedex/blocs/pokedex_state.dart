@@ -9,7 +9,7 @@ class PokedexState extends Equatable {
   final List<PokemonModel?>? pokemons;
   final List<PokemonModel?>? filteredPokemons;
   final List<PokemonModel?>? capturedPokemons;
-  final List<PokemonSpecieModel>? pokemonSpecie;
+  final List<PokemonSpecieModel?>? pokemonSpecie;
   final bool? isLoading;
   final bool? isFiltered;
   final bool? isPokemonLoadfailure;

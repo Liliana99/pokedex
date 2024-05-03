@@ -133,7 +133,8 @@ class PokemonGrid extends StatelessWidget {
                   ? state.filteredPokemons![index]
                   : state.pokemons![index];
               Color pokemonBackgroundColor =
-                  findPokemonTypeColor(pokemon!.types!.first.type!.name!);
+                  findPokemonTypeColor(pokemon!.types!.first.type!.name!) ??
+                      Colors.red;
 
               return PokeDexCard(
                   backgroundColor: pokemonBackgroundColor,

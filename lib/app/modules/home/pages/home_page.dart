@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/app/modules/home/widgets/pokeball_widget.dart';
 import 'package:flutter_application_1/app/modules/home/widgets/section_card.dart';
 import 'package:flutter_application_1/app/modules/pokedex/blocs/pokedex_cubit.dart';
+import 'package:flutter_application_1/app/modules/pokedex/blocs/pokedex_state.dart';
 import 'package:flutter_application_1/app/router.dart';
 import 'package:flutter_application_1/shared/repositories/pokemon_repository.dart/fetch_pokemon.dart';
 import 'package:flutter_application_1/utils/calculate_dimensions.dart';
@@ -43,12 +44,34 @@ class HomeContent extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: ActionButtons(
-              maxWidth: dimensions.maxWidth,
-              maxHeight: dimensions.maxHeight,
-              onPressedButton1: () => context.go(pokedexRoute),
-              onPressedButton2: () => context.go(
-                pokemonCapturePage,
+            child: BlocListener<PokedexCubit, PokedexState>(
+              listener: (context, state) {
+                if (state.capturedPokemons != null &&
+                    state.capturedPokemons!.isNotEmpty &&
+                    state.pokemonSpecie != null &&
+                    state.pokemonSpecie!.isNotEmpty) {
+                  context.go(pokemonCapturePage, extra: state);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text('No existen pokemons capturados'),
+                      duration: const Duration(seconds: 2),
+                      action: SnackBarAction(
+                        label: 'OK',
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                        },
+                      ),
+                    ),
+                  );
+                }
+              },
+              child: ActionButtons(
+                maxWidth: dimensions.maxWidth,
+                maxHeight: dimensions.maxHeight,
+                onPressedButton1: () => context.go(pokedexRoute),
+                onPressedButton2: () =>
+                    context.read<PokedexCubit>().loadLocalCapturedPokemons(),
               ),
             ),
           ),
