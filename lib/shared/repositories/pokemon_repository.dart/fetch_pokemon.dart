@@ -71,6 +71,8 @@ class PokemonRepository {
           return pokemonModel;
         }
       }
+    } catch (e) {
+      print('exception fetchPokemonData ${e.toString()}');
     } finally {}
     return null;
   }
@@ -100,31 +102,33 @@ class PokemonRepository {
   Future<List<PokemonModel?>?> fetchAndUpdateList(
       Function(PokemonModel) onPokemonFetched,
       Function(PokemonSpecieModel) onSpecieFectched) async {
-    var pokemonBody =
-        await CacheManagerRepository().readCachedJsonPokemonBody() ??
-            await retrieveAndPokemonData();
-
-    var pokemons = pokemonBody!['results'].sublist(10);
-    final Executor executor = Executor(concurrency: 10);
     List<PokemonModel?>? pokemonsList = [];
+    try {
+      var pokemonBody =
+          await CacheManagerRepository().readCachedJsonPokemonBody() ??
+              await retrieveAndPokemonData();
 
-    for (var pokemon in pokemons) {
-      unawaited(
-        executor.scheduleTask(
-          () async {
-            PokemonModel? pokemonModel =
-                await fetchPokemonData(pokemon['name']!);
-            onPokemonFetched(pokemonModel!);
-            var specie = await fetchSpecies(pokemonModel.species!.url!);
-            if (specie != null) {
-              onSpecieFectched(specie);
-            }
-          },
-        ),
-      );
-    }
-    await executor.join(withWaiting: true);
-    await executor.close();
+      var pokemons = pokemonBody!['results'].sublist(10);
+      final Executor executor = Executor(concurrency: 10);
+
+      for (var pokemon in pokemons) {
+        unawaited(
+          executor.scheduleTask(
+            () async {
+              PokemonModel? pokemonModel =
+                  await fetchPokemonData(pokemon['name']!);
+              onPokemonFetched(pokemonModel!);
+              var specie = await fetchSpecies(pokemonModel.species!.url!);
+              if (specie != null) {
+                onSpecieFectched(specie);
+              }
+            },
+          ),
+        );
+      }
+      await executor.join(withWaiting: true);
+      await executor.close();
+    } finally {}
     return pokemonsList;
   }
 
@@ -134,6 +138,7 @@ class PokemonRepository {
       if (response.statusCode == 200) {
         PokemonSpecieModel? pokemonSpecie =
             PokemonSpecieModel.fromJson(response.data);
+
         return pokemonSpecie;
       }
       return null;

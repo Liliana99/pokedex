@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/app/modules/home/pages/home_page.dart';
 import 'package:flutter_application_1/app/modules/pokedex/blocs/pokedex_cubit.dart';
+import 'package:flutter_application_1/app/modules/pokedex/blocs/pokedex_state.dart';
 
 import 'package:flutter_application_1/app/modules/pokedex/pages/pokedex_page.dart';
 import 'package:flutter_application_1/app/modules/pokemon_capture/widgets/pokeball_animation_capture.dart';
@@ -39,9 +40,9 @@ GoRouter buildRoutes(PokedexCubit cubit) {
         path: pokemonCapturePage,
         pageBuilder: (BuildContext context, GoRouterState state) => fadeNav(
           state,
-          PokemonCapturePage(
-            state: cubit.state,
+          PokemonCaptureContent(
             pokemonBackgroundColor: Colors.red,
+            pokemonState: state.extra as PokedexState,
           ),
         ),
       ),

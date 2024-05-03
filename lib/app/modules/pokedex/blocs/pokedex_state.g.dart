@@ -17,7 +17,7 @@ abstract class _$PokedexStateCWProxy {
 
   PokedexState isFiltered(bool? isFiltered);
 
-  PokedexState pokemonSpecie(List<PokemonSpecieModel>? pokemonSpecie);
+  PokedexState pokemonSpecie(List<PokemonSpecieModel?>? pokemonSpecie);
 
   PokedexState error(String? error);
 
@@ -41,7 +41,7 @@ abstract class _$PokedexStateCWProxy {
     List<PokemonModel?>? capturedPokemons,
     bool? isLoading,
     bool? isFiltered,
-    List<PokemonSpecieModel>? pokemonSpecie,
+    List<PokemonSpecieModel?>? pokemonSpecie,
     String? error,
     bool? isPokemonLoadfailure,
     bool? isPokemonLoadSuccess,
@@ -75,7 +75,7 @@ class _$PokedexStateCWProxyImpl implements _$PokedexStateCWProxy {
   PokedexState isFiltered(bool? isFiltered) => this(isFiltered: isFiltered);
 
   @override
-  PokedexState pokemonSpecie(List<PokemonSpecieModel>? pokemonSpecie) =>
+  PokedexState pokemonSpecie(List<PokemonSpecieModel?>? pokemonSpecie) =>
       this(pokemonSpecie: pokemonSpecie);
 
   @override
@@ -140,7 +140,7 @@ class _$PokedexStateCWProxyImpl implements _$PokedexStateCWProxy {
       pokemonSpecie: pokemonSpecie == const $CopyWithPlaceholder()
           ? _value.pokemonSpecie
           // ignore: cast_nullable_to_non_nullable
-          : pokemonSpecie as List<PokemonSpecieModel>?,
+          : pokemonSpecie as List<PokemonSpecieModel?>?,
       error: error == const $CopyWithPlaceholder()
           ? _value.error
           // ignore: cast_nullable_to_non_nullable

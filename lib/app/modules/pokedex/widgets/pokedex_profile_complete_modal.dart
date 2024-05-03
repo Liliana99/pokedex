@@ -2,7 +2,6 @@ import 'package:dismissible_page/dismissible_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/app/modules/pokedex/blocs/pokedex_cubit.dart';
 import 'package:flutter_application_1/app/modules/pokedex/blocs/pokedex_state.dart';
-import 'package:flutter_application_1/app/modules/pokedex/widgets/pokeball_vibrate.dart';
 import 'package:flutter_application_1/app/modules/pokedex/widgets/pokemon_detail_info.dart';
 import 'package:flutter_application_1/app/modules/pokedex/widgets/pokemon_header_info.dart';
 import 'package:flutter_application_1/app/modules/pokemon_capture/widgets/pokeball_animation_capture.dart';
@@ -16,6 +15,29 @@ void showPokemonModal({
   required PokemonModel pokemon,
   required PokedexState state,
 }) {
+  void closeDialog(BuildContext context) {
+    Navigator.pop(context);
+  }
+
+  void performCubitAction(PokemonSpecieModel? pokemonSpecieModel) {
+    context
+        .read<PokedexCubit>()
+        .updatePokemonCaptureStatus(pokemon.id, pokemonSpecieModel, true);
+  }
+
+  void goToNewScreen(BuildContext context) {
+    context.pushTransparentRoute(
+      const PokeballAnimationCapture(),
+    );
+  }
+
+  void handleUserAction(
+      BuildContext context, PokemonSpecieModel? pokemonSpecieModel) {
+    closeDialog(context);
+    performCubitAction(pokemonSpecieModel);
+    goToNewScreen(context);
+  }
+
   showModalBottomSheet(
     context: context,
     backgroundColor: backgroundColor,
@@ -28,67 +50,51 @@ void showPokemonModal({
     ) {
       String? specieDescription;
       PokemonSpecieModel? pokemonSpecieModel;
+
       if (pokemon.id > 0) {
         if (state.pokemonSpecie != null && state.pokemonSpecie!.isNotEmpty) {
           pokemonSpecieModel = state.pokemonSpecie!
-              .firstWhere((pokemonSpecie) => pokemonSpecie.id == pokemon.id);
-          specieDescription = pokemonSpecieModel.getFlavorTextInSpanish()!;
+              .firstWhere((pokemonSpecie) => pokemonSpecie!.id == pokemon.id);
+          specieDescription = pokemonSpecieModel!.getFlavorTextInSpanish()!;
         }
 
         return ConstrainedBox(
           constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height * 0.80,
+              maxHeight: MediaQuery.of(context).size.height * 0.85,
               maxWidth: MediaQuery.of(context).size.width),
           child: SingleChildScrollView(
             child: Column(
               children: <Widget>[
                 Stack(
+                  clipBehavior: Clip.hardEdge,
                   children: [
                     PokemonHeaderInfo(
                         backgroundColor: backgroundColor, pokemon: pokemon),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Transform.scale(
-                            scale: 0.9,
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 12),
-                              child: Transform.translate(
-                                offset: const Offset(0.0, 1.25),
-                                child: Center(
-                                  child: Image.network(
-                                      pokemon
-                                          .sprites!.other!.home!.frontDefault!,
-                                      cacheWidth: 300,
-                                      cacheHeight: 300,
-                                      fit: BoxFit.cover),
-                                ),
-                              ),
-                            ),
-                          ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 5, left: 20),
+                      child: Center(
+                        child: Transform.scale(
+                          scale: 0.9,
+                          child: Image.network(
+                              pokemon.sprites!.other!.home!.frontDefault!,
+                              cacheWidth: 300,
+                              cacheHeight: 300,
+                              fit: BoxFit.cover),
                         ),
-                        PokeballVibrate(
-                          onTap: () {
-                            context
-                                .read<PokedexCubit>()
-                                .updatePokemonCaptureStatus(pokemon.id, true);
-
-                            context.pushTransparentRoute(
-                              const PokeballAnimationCapture(),
-                            );
-                          },
-                        ),
-                      ],
+                      ),
                     ),
                   ],
                 ),
-                PokemonDetailInfo(
-                  pokemon: pokemon,
-                  pokemonSpecieModel: pokemonSpecieModel,
-                  specieDescription: specieDescription,
+                Transform.translate(
+                  offset: const Offset(0.0, -20.0),
+                  child: PokemonDetailInfo(
+                    pokemon: pokemon,
+                    pokemonSpecieModel: pokemonSpecieModel,
+                    specieDescription: specieDescription,
+                    backgroundColor: backgroundColor,
+                    onTap: () => handleUserAction(context, pokemonSpecieModel),
+                  ),
                 ),
-                const SizedBox(height: 20),
               ],
             ),
           ),

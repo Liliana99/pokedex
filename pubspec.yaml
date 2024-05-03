@@ -16,7 +16,7 @@ dependencies:
 
   
   cupertino_icons: ^1.0.6
-  dio: ^5.4.2
+  dio: ^5.4.3+1
 
   logger: ^2.2.0
 
@@ -31,7 +31,7 @@ dependencies:
   intl: 0.18.1
   intl_utils: ^2.8.7
   o3d: ^3.1.0
-  go_router: ^13.2.1
+  go_router: ^13.2.4
 
   flutter_cache_manager: ^3.3.1
   executor: ^2.2.3
@@ -41,10 +41,10 @@ dependencies:
   rename_app: ^1.3.2
 
   flutter_custom_clippers: ^2.1.0
-  shared_preferences: ^2.2.2
+  shared_preferences: ^2.2.3
   dismissible_page: ^1.0.2
-  appinio_swiper: ^2.1.0
-
+  appinio_swiper: ^2.1.1
+  
 
   
   

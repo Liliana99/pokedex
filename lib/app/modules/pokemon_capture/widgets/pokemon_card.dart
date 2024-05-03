@@ -4,6 +4,7 @@ import 'package:flutter_application_1/app/modules/pokedex/widgets/pokemon_detail
 import 'package:flutter_application_1/app/modules/pokedex/widgets/pokemon_header_info.dart';
 import 'package:flutter_application_1/shared/models/pokemon_model.dart';
 import 'package:flutter_application_1/theme/theme.dart';
+import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 
 class PokemonCardCaptured extends StatelessWidget {
   const PokemonCardCaptured(
@@ -30,6 +31,7 @@ class PokemonCardCaptured extends StatelessWidget {
         onTap: onTap?.call,
         child: Column(children: <Widget>[
           Flexible(
+            flex: 3,
             child: Stack(
               children: [
                 PokemonHeaderInfo(
@@ -37,38 +39,60 @@ class PokemonCardCaptured extends StatelessWidget {
                 const SizedBox(
                   height: 10,
                 ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Transform.scale(
-                        scale: 0.9,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: Transform.translate(
-                            offset: const Offset(0.0, 1.25),
-                            child: Center(
-                              child: Image.network(
-                                  pokemon.sprites!.other!.home!.frontDefault!,
-                                  cacheWidth: 300,
-                                  cacheHeight: 300,
-                                  fit: BoxFit.cover),
-                            ),
-                          ),
-                        ),
+                Transform.scale(
+                  scale: 0.9,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Transform.translate(
+                      offset: const Offset(0.0, 1.25),
+                      child: Center(
+                        child: Image.network(
+                            pokemon.sprites!.other!.home!.frontDefault!,
+                            cacheWidth: 300,
+                            cacheHeight: 300,
+                            fit: BoxFit.cover),
                       ),
-                    )
-                  ],
+                    ),
+                  ),
                 )
               ],
             ),
           ),
           Flexible(
-            child: PokemonDetailInfo(
-              pokemon: pokemon,
-              pokemonSpecieModel: pokemonSpecieModel,
-              specieDescription: specieDescription,
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                child: ClipPath(
+                  clipper: OvalLeftBorderClipper(),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Color.lerp(backgroundColor, Colors.white, 0.5),
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(30.0),
+                      ),
+                    ),
+                    height: 60,
+                    width: MediaQuery.of(context).size.width * 0.90,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(
+                        'Capturado',
+                        textAlign: TextAlign.left,
+                        softWrap: true,
+                        textScaler: const TextScaler.linear(0.90),
+                        style: context.headM!.copyWith(
+                            fontSize: 24,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
+          const Flexible(child: Text('Detalles')),
           const SizedBox(height: 10),
         ]),
       ),

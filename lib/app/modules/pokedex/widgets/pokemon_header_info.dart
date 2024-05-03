@@ -38,14 +38,18 @@ class PokemonHeaderInfo extends StatelessWidget {
                       ),
                     ),
                     height: 120,
+                    width: MediaQuery.of(context).size.width * 0.90,
                     child: Padding(
                       padding: const EdgeInsets.all(12),
                       child: Text(
                         pokemon.name,
+                        textAlign: TextAlign.left,
+                        softWrap: true,
+                        textScaler: const TextScaler.linear(0.98),
                         style: context.bodyL!.copyWith(
-                            color: Colors.black45,
+                            color: Colors.black,
                             fontSize: 18,
-                            fontWeight: FontWeight.w400),
+                            fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),
@@ -61,7 +65,7 @@ class PokemonHeaderInfo extends StatelessWidget {
                 child: Text(
                   '#${pokemon.id.toString()}',
                   style: context.bodyM!.copyWith(
-                      color: Colors.black26,
+                      color: Colors.black,
                       fontSize: 18,
                       fontWeight: FontWeight.w600),
                 ),

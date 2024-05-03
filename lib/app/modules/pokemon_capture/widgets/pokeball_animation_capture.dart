@@ -1,15 +1,22 @@
 import 'package:dismissible_page/dismissible_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/consts/assets_constants.dart';
+import 'package:flutter_application_1/shared/models/pokemon_model.dart';
 import 'package:o3d/o3d.dart';
 
 class PokeballAnimationCapture extends StatelessWidget {
-  const PokeballAnimationCapture({super.key});
+  const PokeballAnimationCapture({
+    super.key,
+    this.pokemon,
+  });
+  final PokemonModel? pokemon;
 
   @override
   Widget build(BuildContext context) {
     return DismissiblePage(
-      onDismissed: () => Navigator.of(context).pop(),
+      onDismissed: () {
+        Navigator.of(context).pop();
+      },
       isFullScreen: false,
       disabled: true,
       minRadius: 10,

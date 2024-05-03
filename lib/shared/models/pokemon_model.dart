@@ -1,6 +1,7 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:collection/collection.dart';
 
 part 'pokemon_model.g.dart';
 
@@ -451,11 +452,16 @@ class PokemonSpecieModel extends Equatable {
   Map<String, dynamic> toJson() => _$PokemonSpecieModelToJson(this);
 
   String? getFlavorTextInSpanish() {
-    return flavorTextEntries
-        ?.firstWhere(
-          (entry) => entry.language!.name == 'es',
-          orElse: () => const FlavorTextEntry(),
-        )
-        .flavorText;
+    try {
+      return flavorTextEntries
+          ?.firstWhere(
+            (entry) => entry.language!.name == 'es',
+            orElse: () => const FlavorTextEntry(),
+          )
+          .flavorText;
+    } on Exception catch (e) {
+      print('getFlavorTextInSpanish exception $e');
+    }
+    return null;
   }
 }
