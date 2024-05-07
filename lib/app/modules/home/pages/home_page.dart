@@ -4,6 +4,7 @@ import 'package:flutter_application_1/app/modules/home/widgets/section_card.dart
 import 'package:flutter_application_1/app/modules/pokedex/blocs/pokedex_cubit.dart';
 import 'package:flutter_application_1/app/modules/pokedex/blocs/pokedex_state.dart';
 import 'package:flutter_application_1/app/router.dart';
+import 'package:flutter_application_1/consts/app_testing_keys_constants.dart';
 import 'package:flutter_application_1/shared/repositories/pokemon_repository.dart/fetch_pokemon.dart';
 import 'package:flutter_application_1/utils/calculate_dimensions.dart';
 import 'package:flutter_application_1/theme/theme.dart';
@@ -70,8 +71,9 @@ class HomeContent extends StatelessWidget {
                 maxWidth: dimensions.maxWidth,
                 maxHeight: dimensions.maxHeight,
                 onPressedButton1: () => context.go(pokedexRoute),
-                onPressedButton2: () =>
-                    context.read<PokedexCubit>().loadLocalCapturedPokemons(),
+                onPressedButton2: () async => await context
+                    .read<PokedexCubit>()
+                    .loadLocalCapturedPokemons(),
               ),
             ),
           ),
@@ -92,7 +94,7 @@ class TitleAndPokeball extends StatelessWidget {
     return Column(
       children: [
         Text(
-          'Pokédex',
+          'Home',
           style: context.dispM!
               .copyWith(color: Colors.white, fontWeight: FontWeight.w700),
         ),
@@ -128,6 +130,7 @@ class ActionButtons extends StatelessWidget {
       children: [
         Expanded(
           child: FeatureCardWithEmoji(
+            key: const ValueKey(Keys.homeButton1),
             maxWidth: maxWidth,
             maxHeight: maxHeight,
             title: 'Pokédex',
@@ -142,6 +145,7 @@ class ActionButtons extends StatelessWidget {
         ),
         Expanded(
           child: FeatureCardWithEmoji(
+            key: const ValueKey(Keys.homeButton2),
             maxWidth: maxWidth,
             maxHeight: maxHeight,
             title: 'Capturados',

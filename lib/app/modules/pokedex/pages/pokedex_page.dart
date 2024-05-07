@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_application_1/app/modules/pokedex/blocs/pokedex_cubit.dart';
 import 'package:flutter_application_1/app/modules/pokedex/blocs/pokedex_state.dart';
+import 'package:flutter_application_1/consts/app_testing_keys_constants.dart';
 import 'package:flutter_application_1/shared/widgets/app_bar.dart';
 import 'package:flutter_application_1/app/modules/pokedex/widgets/pokedex_card.dart';
 import 'package:flutter_application_1/app/modules/pokedex/widgets/pokedex_profile_complete_modal.dart';
@@ -26,37 +28,49 @@ class _PokedexPageState extends State<PokedexPage> {
     _scrollController = ScrollController();
     _pokedexCubit = BlocProvider.of<PokedexCubit>(context);
     _scrollController.addListener(_scrollListener);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.position.isScrollingNotifier
+            .addListener(_scrollingStatusChanged);
+      }
+    });
   }
 
   void _scrollListener() {
-    _pokedexCubit.showAppBar();
-    _pokedexCubit.showAppBarWithStatus(true);
     if (_scrollController.hasClients) {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        _scrollController.addListener(() {
-          //isScrolling
+      if (_scrollController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        _pokedexCubit.showAppBar();
+      } else if (_scrollController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        _pokedexCubit.hideAppBar();
+      }
+    }
+  }
 
-          _pokedexCubit.hideAppBar();
-        });
-        _scrollController.position.isScrollingNotifier.addListener(() {
-          if (!_scrollController.position.isScrollingNotifier.value) {
-            //isStopped
-            _pokedexCubit.showAppBar();
-            _pokedexCubit
-                .showAppBarWithStatus(_scrollController.position.pixels == 0);
-          } else {
-            //isScrolling
-            _pokedexCubit.hideAppBar();
-          }
-        });
-      });
+  void _scrollingStatusChanged() {
+    if (_scrollController.hasClients) {
+      if (!_scrollController.position.isScrollingNotifier.value) {
+        // El scroll ha parado
+        _pokedexCubit.showAppBar();
+        _pokedexCubit
+            .showAppBarWithStatus(_scrollController.position.pixels == 0);
+      } else {
+        // El scroll está activo
+        _pokedexCubit.hideAppBar();
+      }
     }
   }
 
   @override
   void dispose() {
     _scrollController.removeListener(_scrollListener);
+    if (_scrollController.hasClients) {
+      _scrollController.position.isScrollingNotifier
+          .removeListener(_scrollingStatusChanged);
+    }
     _scrollController.dispose();
+
     super.dispose();
   }
 
@@ -64,16 +78,16 @@ class _PokedexPageState extends State<PokedexPage> {
   Widget build(BuildContext context) {
     return BlocBuilder<PokedexCubit, PokedexState>(
       builder: (context, state) {
-        return _PokedexContent(_pokedexCubit, _scrollController);
+        return PokedexContent(_pokedexCubit, _scrollController);
       },
     );
   }
 }
 
-class _PokedexContent extends StatelessWidget {
+class PokedexContent extends StatelessWidget {
   final PokedexCubit cubit;
   final ScrollController controller;
-  const _PokedexContent(this.cubit, this.controller);
+  const PokedexContent(this.cubit, this.controller, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -90,6 +104,7 @@ class _PokedexContent extends StatelessWidget {
           }
           return NestedScrollView(
             controller: controller,
+            key: const ValueKey(Keys.scrollWidget),
             headerSliverBuilder: (_, __) => [
               AppMovingTitleSliverAppBar(
                 title: 'Pokedex',
