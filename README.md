@@ -68,6 +68,9 @@ http://karma-runner.github.io/6.1/dev/git-commit-msg.html
 ## Getting Started
 ![Output sample](Pokedex.gif)
 
+
+![Output sample](testing.png)
+
 This project is a great demo to demostrate use of the concepts CLEAN ARCHITECTURE, SOLID.
 For more information visit my website https://www.marialijideveloper.com/
 
